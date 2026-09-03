@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mocha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halfdisposal</title>
+<meta name="description" content="Portfolio of Halfdisposal — physics undergrad, programmer, and game developer.">
+
+<link id="favicon" rel="icon" type="image/svg+xml" href="favicon-mocha.svg">
+<link rel="alternate icon" href="favicon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Halfdisposal — physics & code">
+<meta property="og:description" content="Portfolio of Halfdisposal — physics undergrad, programmer, and game developer.">
+<meta property="og:image" content="og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Halfdisposal — physics & code">
+<meta name="twitter:image" content="og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="orbit-canvas"></canvas>
+
+<button id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">
+  <span class="node-icon">
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+  </span>
+</button>
+
+<div id="scroll-rail" aria-hidden="true">
+  <div id="scroll-rail-track"></div>
+  <div id="scroll-rail-fill"></div>
+  <div id="scroll-rail-dot"></div>
+</div>
+
+<nav id="nav-panel" aria-hidden="true">
+  <ul>
+    <li><a href="#home" class="nav-link" data-label="home">home</a></li>
+    <li><a href="#projects" class="nav-link" data-label="projects">projects</a></li>
+    <li><a href="#about" class="nav-link" data-label="about">about</a></li>
+    <li><a href="#contact" class="nav-link" data-label="contact">contact</a></li>
+  </ul>
+</nav>
+
+<div id="nav-overlay"></div>
+
+<button id="theme-toggle" aria-label="Toggle light and dark theme">
+  <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="12" cy="12" r="4.2"/>
+    <path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>
+  </svg>
+  <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/>
+  </svg>
+</button>
+
+<main>
+
+  <section id="home" class="section hero">
+    <p class="mono-tag">// state vector</p>
+    <h1>Halfdisposal<span class="cursor">_</span></h1>
+    <p class="hero-line">physics student · programmer · likes building games/simulations</p>
+    <p class="hero-sub">I spend my time somewhere between differential equations and node graphs, simulating physical
+      systems in C++, then building the engines and tools that let me see them move.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">See my work</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </section>
+
+  <section id="projects" class="section">
+    <div class="section-head">
+      <h2>Top Projects</h2>
+      <p class="section-note">A mix of physics simulation, machine learning, and game systems; mostly in C++, Rust, Python and GDScript.</p>
+    </div>
+
+    <div class="projects-teaser">
+      <div class="project-grid preview">
+
+        <article class="project-card">
+          <div class="project-card-head">
+            <span class="node-marker"></span>
+            <h3>GDPPO</h3>
+          </div>
+          <p>A MLPack backended gdextension for training and inference of models with support for saving and loading mlpack models. Mainly focused on Reinforcement Learning with PPO Algorithm, with support for Linear layer and activation functions.</p>
+          <ul class="tag-list">
+            <li>Godot 4</li><li>C++</li><li>GDExtension</li><li>mlpack</li>
+          </ul>
+        </article>
+
+        <article class="project-card">
+          <div class="project-card-head">
+            <span class="node-marker"></span>
+            <h3>AtelierMagic</h3>
+          </div>
+          <p>A spell-casting game where you draw glyphs freehand, inspired by the anime <strong>Witch Hat Atelier</strong>. Strokes are scored using connected-component analysis and PCA-based normalization, matched against a library of gestures.</p>
+          <ul class="tag-list">
+            <li>Godot 4</li><li>GDScript</li><li>Computer Vision</li>
+          </ul>
+        </article>
+
+      </div>
+      <a class="show-all" href="projects.html">
+        <span class="show-all-rule"></span>
+        <span class="show-all-label">show all projects</span>
+        <span class="show-all-rule"></span>
+      </a>
+    </div>
+  </section>
+
+  <section id="about" class="section about">
+    <div class="section-head">
+      <h2>About</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a physics student working through a BS-MS degree in IISER Kolkata, currently deep in quantum mechanics, condensed matter physics and exploring phase transitions in materials, alongside the usual run of experimental labs.</p>
+        <p>Outside coursework, I build software and games under the name <strong>Halfdisposal</strong>. Most of it sits
+          at the intersection of the two halves of my life: physical simulations that need to be fast and
+          correct, and the engines and editors that make them explorable. I work mainly in C++, Rust, GDScript,
+          and Python.</p>
+      </div>
+      <div class="about-toolkit">
+        <p class="mono-tag">// toolkit</p>
+        <ul>
+          <li><span>languages</span><span>C++, Rust(sometimes), GDScript, Python</span></li>
+          <li><span>engine</span><span>Godot 4</span></li>
+          <li><span>editor</span><span>Neovim</span></li>
+          <li><span>palette</span><span>Catppuccin</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section contact">
+    <div class="section-head">
+      <h2>Contact</h2>
+      <p class="section-note">Always happy to talk physics, games, or the C++ build systems that connect them.</p>
+    </div>
+    <ul class="contact-list">
+      <li><a href="mailto:bikashjyotisaharia1065@gmail.com">bikashjyotisaharia1065@gmail.com</a></li>
+      <li><a href="https://github.com/halfdisposal" target="_blank" rel="noopener">github.com/halfdisposal </a></li>
+      <li><a href="https://halfdisposal.itch.io" target="_blank" rel="noopener">halfdisposal.itch.io </a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <p>Built by Halfdisposal · <span id="year"></span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

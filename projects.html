@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mocha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Halfdisposal</title>
+<meta name="description" content="All projects by Halfdisposal — physics undergrad, programmer, and game developer.">
+
+<link id="favicon" rel="icon" type="image/svg+xml" href="favicon-mocha.svg">
+<link rel="alternate icon" href="favicon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Projects — Halfdisposal">
+<meta property="og:description" content="All projects by Halfdisposal — physics undergrad, programmer, and game developer.">
+<meta property="og:image" content="og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Projects — Halfdisposal">
+<meta name="twitter:image" content="og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="orbit-canvas"></canvas>
+
+<button id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">
+  <span class="node-icon">
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+  </span>
+</button>
+
+<div id="scroll-rail" aria-hidden="true">
+  <div id="scroll-rail-track"></div>
+  <div id="scroll-rail-fill"></div>
+  <div id="scroll-rail-dot"></div>
+</div>
+
+<nav id="nav-panel" aria-hidden="true">
+  <ul>
+    <li><a href="index.html#home" class="nav-link" data-label="home">home</a></li>
+    <li><a href="projects.html" class="nav-link active" data-label="projects">projects</a></li>
+    <li><a href="index.html#about" class="nav-link" data-label="about">about</a></li>
+    <li><a href="index.html#contact" class="nav-link" data-label="contact">contact</a></li>
+  </ul>
+</nav>
+
+<div id="nav-overlay"></div>
+
+<button id="theme-toggle" aria-label="Toggle light and dark theme">
+  <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="12" cy="12" r="4.2"/>
+    <path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>
+  </svg>
+  <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/>
+  </svg>
+</button>
+
+<main>
+
+  <section class="section projects-page">
+    <a class="back-link" href="index.html#projects">back to home</a>
+    <div class="section-head">
+      <h1>All projects</h1>
+      <p class="section-note">Everything I've built, mostly in C++, Rust, Python and GDScript.</p>
+    </div>
+
+    <div class="project-grid">
+
+      <article class="project-card">
+        <div class="project-card-head">
+          <span class="node-marker"></span>
+          <h3>GDPPO</h3>
+        </div>
+        <p>A MLPack backended gdextension for training and inference of models with support for saving and loading mlpack models. Mainly focused on Reinforcement Learning with PPO Algorithm, with support for Linear layer and activation functions.</p>
+        <ul class="tag-list">
+          <li>Godot 4</li><li>C++</li><li>GDExtension</li><li>mlpack</li>
+        </ul>
+      </article>
+
+      <article class="project-card">
+        <div class="project-card-head">
+          <span class="node-marker"></span>
+          <h3>AtelierMagic</h3>
+        </div>
+        <p>A spell-casting game where you draw glyphs freehand, inspired by the anime <strong>Witch Hat Atelier</strong>. Strokes are scored using connected-component analysis and PCA-based normalization, matched against a library of gestures.</p>
+        <ul class="tag-list">
+          <li>Godot 4</li><li>GDScript</li><li>Computer Vision</li>
+        </ul>
+      </article>
+
+      <!-- add more <article class="project-card"> blocks here — copy one of the above and edit -->
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Built by Halfdisposal · <span id="year"></span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
