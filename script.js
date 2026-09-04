@@ -165,9 +165,9 @@
       targetPullX = (dx / dist) * strength * maxPull;
       targetPullY = (dy / dist) * strength * maxPull;
     }
-    pullX += (targetPullX - pullX) * 0.06;
-    pullY += (targetPullY - pullY) * 0.06;
-
+    pullX += (targetPullX - pullX) * 0.7;
+    pullY += (targetPullY - pullY) * 0.7;
+    
     const x = baseX + pullX;
     const y = baseY + pullY;
 
