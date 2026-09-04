@@ -64,7 +64,7 @@
   function draw() {
     const cx = width;
     const cy = height / 2;
-    const radius = width * 0.5;
+    const radius = Math.max(width, height) * 0.5;
     const spacing = radius / ((N - 1) / 2);
     const half = radius;
     const maxDist = radius;
