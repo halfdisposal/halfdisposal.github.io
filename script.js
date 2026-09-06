@@ -13,7 +13,12 @@
   function syncFavicon() {
     if (!favicon) return;
     const theme = root.getAttribute('data-theme') === 'latte' ? 'latte' : 'mocha';
-    favicon.setAttribute('href', `favicon-${theme}.svg`);
+    // Reuse whatever directory prefix the <link> already had (e.g. "../"
+    // on pages under live-projects/) instead of hardcoding a root-relative
+    // path, so this keeps working from any subdirectory.
+    const currentHref = favicon.getAttribute('href') || '';
+    const prefix = currentHref.includes('/') ? currentHref.slice(0, currentHref.lastIndexOf('/') + 1) : '';
+    favicon.setAttribute('href', `${prefix}favicon-${theme}.svg`);
   }
 
   syncFavicon();

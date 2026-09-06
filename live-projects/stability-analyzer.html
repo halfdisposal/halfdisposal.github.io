@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mocha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stability Analyzer — Halfdisposal</title>
+<meta name="description" content="Interactive 2D nonlinear system phase portrait analyzer.">
+
+<link id="favicon" rel="icon" type="image/svg+xml" href="../favicon-mocha.svg">
+<link rel="alternate icon" href="../favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="stability.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.2.0/math.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<canvas id="orbit-canvas"></canvas>
+
+<button id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">
+  <span class="node-icon">
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+    <span class="node-dot"></span>
+  </span>
+</button>
+
+<div id="scroll-rail" aria-hidden="true">
+  <div id="scroll-rail-track"></div>
+  <div id="scroll-rail-fill"></div>
+  <div id="scroll-rail-dot"></div>
+</div>
+
+<nav id="nav-panel" aria-hidden="true">
+  <ul>
+    <li><a href="../index.html#home" class="nav-link" data-label="home">home</a></li>
+    <li><a href="../projects.html" class="nav-link" data-label="projects">projects</a></li>
+    <li><a href="../index.html#about" class="nav-link" data-label="about">about</a></li>
+    <li><a href="../index.html#contact" class="nav-link" data-label="contact">contact</a></li>
+  </ul>
+</nav>
+
+<div id="nav-overlay"></div>
+
+<button id="theme-toggle" aria-label="Toggle light and dark theme">
+  <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="12" cy="12" r="4.2"/>
+    <path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>
+  </svg>
+  <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/>
+  </svg>
+</button>
+
+<main>
+  <section class="section live-project-section">
+    <a class="back-link" href="../projects.html">back to projects</a>
+    
+    <div class="live-project-container">
+      <div class="lp-header">
+        <h1>Stability Analyzer</h1>
+        <p>Visualize and analyze 2D nonlinear dynamical systems</p>
+      </div>
+
+      <div class="analyzer-layout">
+        <!-- Left Panel: Inputs -->
+        <div class="analyzer-panel input-panel">
+          <div class="panel-header">
+            <h3>System Definition</h3>
+          </div>
+          
+          <div class="input-group">
+            <label for="var1">Variable 1</label>
+            <input type="text" id="var1" placeholder="x" value="x">
+          </div>
+
+          <div class="input-group">
+            <label for="var2">Variable 2</label>
+            <input type="text" id="var2" placeholder="y" value="y">
+          </div>
+
+          <div class="input-group">
+            <label for="eq1">Equation 1 (d{var1}/dt =)</label>
+            <input type="text" id="eq1" placeholder="e.g., y" value="y">
+            <span class="input-hint">Use the variable names you defined above</span>
+          </div>
+
+          <div class="input-group">
+            <label for="eq2">Equation 2 (d{var2}/dt =)</label>
+            <input type="text" id="eq2" placeholder="e.g., -x - 0.5*y" value="-x - 0.5*y">
+			<span class="input-hint">Use the variable names you defined above</span>
+          </div>
+
+          <div class="input-group">
+            <label for="xlim-min">X Range</label>
+            <div class="input-row">
+              <input type="number" id="xlim-min" placeholder="min" value="-2" step="0.5">
+              <input type="number" id="xlim-max" placeholder="max" value="2" step="0.5">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="ylim-min">Y Range</label>
+            <div class="input-row">
+              <input type="number" id="ylim-min" placeholder="min" value="-2" step="0.5">
+              <input type="number" id="ylim-max" placeholder="max" value="2" step="0.5">
+            </div>
+          </div>
+		  
+		  <div class="input-group">
+            <label for="nx">Nx</label>
+            <div class="input-row">
+              <input type="number" id="nx" placeholder="nx" value="10" step="1">
+            </div>
+          </div>
+		  <div class="input-group">
+            <label for="ny">Ny</label>
+            <div class="input-row">
+              <input type="number" id="ny" placeholder="ny" value="10" step="1">
+            </div>
+          </div>
+
+          <button id="analyze-btn" class="btn btn-primary">Analyze</button>
+          <button id="reset-btn" class="btn btn-ghost">Reset</button>
+
+          <div id="error-msg" class="error-msg" style="display: none;"></div>
+        </div>
+
+        <!-- Right Panel: Visualization & Results -->
+        <div class="analyzer-panel right-panel">
+          <div id="plot-container" class="plot-container"></div>
+          
+          <div id="results-panel" class="results-panel" style="display: none;">
+            <div class="results-header">
+              <h3>Analysis Results</h3>
+            </div>
+            <div id="fp-table" class="fp-table"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Built by Halfdisposal · <span id="year"></span></p>
+</footer>
+
+<script src="../script.js"></script>
+<script src="stability.js"></script>
+</body>
+</html>
