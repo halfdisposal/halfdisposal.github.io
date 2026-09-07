@@ -379,6 +379,108 @@ main {
   border-color: var(--surface2);
 }
 
+/* ---------- parameter sliders ---------- */
+
+.param-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.param-sliders:empty {
+  display: none;
+}
+
+.param-slider-row {
+  background: var(--crust);
+  border: 1.5px solid var(--surface1);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
+.param-slider-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+.param-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mauve);
+}
+
+.param-value {
+  font-size: 0.8rem;
+  color: var(--subtext1);
+}
+
+.param-slider-row input[type="range"] {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface1);
+  outline: none;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.param-slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 2px solid var(--base);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+.param-slider-row input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 2px solid var(--base);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+.param-slider-bounds {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 6px;
+}
+
+.param-slider-bounds input[type="number"] {
+  width: 100%;
+  padding: 5px 6px;
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.param-slider-bounds input[type="number"]:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+.param-bounds-sep {
+  font-size: 0.7rem;
+  color: var(--overlay0);
+  font-family: var(--font-mono);
+}
+
 /* ---------- error message ---------- */
 
 .error-msg {
