@@ -97,10 +97,16 @@ const NumericalAnalysis = {
 // Main Application
 class StabilityAnalyzer {
   constructor() {
+    // name -> { value, min, max, step }, one entry per free symbol that
+    // shows up in eq1/eq2 but isn't var1, var2, or a known math.js symbol.
+    this.parameters = {};
+    this._analyzeTimer = null;
+
     this.setupEventListeners();
     this.setupThemeSync();
     this.initializePlot();
     this.setupResizeHandler();
+    this.syncParameters();
   }
 
   setupEventListeners() {
@@ -113,6 +119,138 @@ class StabilityAnalyzer {
         if (e.key === 'Enter') this.analyze();
       });
     });
+
+    // Re-scan for undefined symbols as the system definition changes, so
+    // sliders appear/disappear as parameters are typed in or removed.
+    ['eq1', 'eq2', 'var1', 'var2'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => this.syncParameters());
+    });
+  }
+
+  // Returns the free symbol names referenced in `exprStr` that are not
+  // var1, var2, or already defined by math.js (functions like sin/sqrt,
+  // constants like pi/e, etc). Returns null if the expression doesn't
+  // parse yet (e.g. mid-keystroke) so callers can leave sliders alone.
+  extractFreeSymbols(exprStr, var1, var2) {
+    if (!exprStr) return [];
+    let node;
+    try {
+      node = math.parse(exprStr);
+    } catch (e) {
+      return null;
+    }
+    const names = node.filter(n => n.isSymbolNode).map(n => n.name);
+    return names.filter(name => name !== var1 && name !== var2 && !(name in math));
+  }
+
+  // Scans eq1/eq2 for undefined symbols and keeps this.parameters (and the
+  // sliders rendered from it) in sync: adds a slider with default bounds
+  // for each newly-seen symbol, and drops sliders for symbols that no
+  // longer appear in either equation.
+  syncParameters() {
+    const var1 = document.getElementById('var1').value.trim() || 'x';
+    const var2 = document.getElementById('var2').value.trim() || 'y';
+    const eq1Str = document.getElementById('eq1').value.trim();
+    const eq2Str = document.getElementById('eq2').value.trim();
+
+    const s1 = this.extractFreeSymbols(eq1Str, var1, var2);
+    const s2 = this.extractFreeSymbols(eq2Str, var1, var2);
+    if (s1 === null || s2 === null) return;
+
+    const names = Array.from(new Set([...s1, ...s2]));
+
+    for (const name of Object.keys(this.parameters)) {
+      if (!names.includes(name)) delete this.parameters[name];
+    }
+
+    const DEFAULT_MIN = -10;
+    const DEFAULT_MAX = 10;
+    for (const name of names) {
+      if (!this.parameters[name]) {
+        this.parameters[name] = {
+          min: DEFAULT_MIN,
+          max: DEFAULT_MAX,
+          step: (DEFAULT_MAX - DEFAULT_MIN) / 100,
+          value: 1
+        };
+      }
+    }
+
+    this.renderParameterSliders();
+  }
+
+  renderParameterSliders() {
+    const container = document.getElementById('param-sliders');
+    if (!container) return;
+
+    const names = Object.keys(this.parameters);
+    if (names.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = names.map(name => {
+      const p = this.parameters[name];
+      return `
+        <div class="param-slider-row" data-param="${name}">
+          <div class="param-slider-label">
+            <span class="param-name">${name}</span>
+            <span class="param-value" data-role="value">${p.value.toFixed(3)}</span>
+          </div>
+          <input type="range" data-role="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.value}">
+          <div class="param-slider-bounds">
+            <input type="number" data-role="min" value="${p.min}" step="any">
+            <span class="param-bounds-sep">to</span>
+            <input type="number" data-role="max" value="${p.max}" step="any">
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    names.forEach(name => {
+      const row = container.querySelector(`.param-slider-row[data-param="${CSS.escape(name)}"]`);
+      if (!row) return;
+      const range = row.querySelector('[data-role="range"]');
+      const valueLabel = row.querySelector('[data-role="value"]');
+      const minInput = row.querySelector('[data-role="min"]');
+      const maxInput = row.querySelector('[data-role="max"]');
+
+      range.addEventListener('input', () => {
+        const p = this.parameters[name];
+        if (!p) return;
+        p.value = parseFloat(range.value);
+        valueLabel.textContent = p.value.toFixed(3);
+        this.debouncedAnalyze();
+      });
+
+      const updateBounds = () => {
+        const p = this.parameters[name];
+        if (!p) return;
+        const min = parseFloat(minInput.value);
+        const max = parseFloat(maxInput.value);
+        if (isNaN(min) || isNaN(max) || max <= min) return;
+
+        p.min = min;
+        p.max = max;
+        p.step = (max - min) / 100;
+        p.value = Math.min(Math.max(p.value, min), max);
+
+        range.min = String(min);
+        range.max = String(max);
+        range.step = String(p.step);
+        range.value = String(p.value);
+        valueLabel.textContent = p.value.toFixed(3);
+        this.debouncedAnalyze();
+      };
+
+      minInput.addEventListener('change', updateBounds);
+      maxInput.addEventListener('change', updateBounds);
+    });
+  }
+
+  debouncedAnalyze() {
+    clearTimeout(this._analyzeTimer);
+    this._analyzeTimer = setTimeout(() => this.analyze(), 120);
   }
 
   setupThemeSync() {
@@ -221,8 +359,15 @@ class StabilityAnalyzer {
       const f1 = math.compile(eq1Str);
       const f2 = math.compile(eq2Str);
 
-      const f1Func = (x, y) => f1.evaluate({ [var1]: x, [var2]: y });
-      const f2Func = (x, y) => f2.evaluate({ [var1]: x, [var2]: y });
+      // Any slider values for undefined symbols (e.g. "k" in "-k*x") get
+      // fed into the scope alongside the two phase-plane variables.
+      const paramScope = {};
+      for (const [name, p] of Object.entries(this.parameters)) {
+        paramScope[name] = p.value;
+      }
+
+      const f1Func = (x, y) => f1.evaluate({ [var1]: x, [var2]: y, ...paramScope });
+      const f2Func = (x, y) => f2.evaluate({ [var1]: x, [var2]: y, ...paramScope });
 
       const xlim = [
         parseFloat(document.getElementById('xlim-min').value),
@@ -242,6 +387,7 @@ class StabilityAnalyzer {
   analyze() {
     const errorMsg = document.getElementById('error-msg');
     errorMsg.style.display = 'none';
+    this.syncParameters();
 
     try {
       const { f1, f2, var1, var2, xlim, ylim } = this.parseInput();
@@ -443,6 +589,8 @@ class StabilityAnalyzer {
     document.getElementById('ny').value = '10';
     document.getElementById('error-msg').style.display = 'none';
     document.getElementById('results-panel').classList.remove('show');
+    this.parameters = {};
+    this.renderParameterSliders();
     this.initializePlot();
   }
 }
